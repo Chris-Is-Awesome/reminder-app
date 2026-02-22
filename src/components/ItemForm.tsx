@@ -3,7 +3,9 @@ import { useItems } from "../hooks/useItems";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { Field, FieldLabel, FieldGroup } from "./ui/field";
 import type { Item } from "../types/Item";
+import DateTimePicker from "./reusable/DateTimePicker";
 
 interface ItemFormProps {
   item?: Item;
@@ -11,8 +13,32 @@ interface ItemFormProps {
 
 export function ItemForm({ item }: ItemFormProps) {
   const { createItem } = useItems();
+  const bodyPlaceholders = [
+    "Take out the trash",
+    "Call mom and ask her for money",
+    "Remind me to remind me to remind me to...",
+    "Type anything... please, it's lonely in here.",
+    "Write something profound here...",
+    "Note to self: write better notes to self",
+    "Your great idea goes here, or your shopping list, or that recipe you keep forgetting",
+    "This is something for future me...",
+    "Walk my pet capybara",
+    "Write something here. Or don't. I'm just an app, I don't judge",
+    "Get a watermelon for my pet capybara",
+    "Water the plants",
+    "Reminding you to write a reminder for that thing you might forget",
+    "Stop snoozing reminders",
+    "Hey you, you're finally awake.",
+    "Oh hi. How are you holding up? Because I'm a potato.",
+    "For those who come after...",
+  ];
+
   const [title, setTitle] = useState(item?.title ?? "");
   const [body, setBody] = useState(item?.body ?? "");
+  const [remindAt, setRemindAt] = useState(item?.remindAt ?? null);
+  const [placeholder] = useState(
+    () => bodyPlaceholders[Math.floor(Math.random() * bodyPlaceholders.length)],
+  );
 
   const handleSubmit = async () => {
     await createItem({
@@ -24,23 +50,60 @@ export function ItemForm({ item }: ItemFormProps) {
       isPinned: false,
       isArchived: false,
       isTrashed: false,
+      remindAt: remindAt ?? undefined,
     });
   };
 
+  const submitBtnText = (): string => {
+    if (remindAt) {
+      return "Remind me!";
+    }
+
+    if (item) {
+      return "Save note";
+    }
+
+    return "Create note";
+  };
+
+  const formTitle = (): string => {
+    if (item) {
+      return `Edit ${remindAt ? "Reminder" : "Note"}`;
+    }
+
+    return `Create ${remindAt ? "Reminder" : "Note"}`;
+  };
+
   return (
-    <Form onSubmit={handleSubmit} submitLabel={item ? "Save" : "Create"}>
-      <Input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="border-2 border-blue-500 rounded-md mt-2"
-      />
-      <Textarea
-        placeholder="Write some text here!"
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        className="border-2 border-blue-500 rounded-md mt-2"
-      />
+    <Form
+      onSubmit={handleSubmit}
+      submitLabel={submitBtnText()}
+      formTitle={formTitle()}
+    >
+      <FieldGroup className="flex-col gap-1">
+        <Field>
+          <Input
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="border-2 border-secondary rounded-xl mt-2"
+          />
+        </Field>
+        <Field>
+          <Textarea
+            placeholder={placeholder}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            className="border-2 border-secondary rounded-xl mt-2 h-48 placeholder:text-muted-foreground"
+          />
+        </Field>
+        <FieldLabel htmlFor="remind-at" className="block w-full text-center">
+          Remind me
+        </FieldLabel>
+        <Field id="remind-at">
+          <DateTimePicker onChange={(date) => setRemindAt(date)} />
+        </Field>
+      </FieldGroup>
     </Form>
   );
 }

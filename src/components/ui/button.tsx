@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { usePlatform } from "@/hooks/usePlatform";
 
 import { cn } from "@/lib/utils"
 
@@ -10,7 +11,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+          // "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+          "bg-accent hover:bg-red-400 mt-default px-6 text-foreground",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -26,13 +28,18 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
       },
+      roundness: {
+        default: "rounded-lg",
+        full: "rounded-full",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      roundness: "default",
     },
-  }
-)
+  },
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -41,17 +48,20 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  ({ className, variant, size, roundness, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    const { isMobile } = usePlatform();
+    roundness = isMobile ? "full" : roundness;
+    size = isMobile ? "lg" : size;
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, roundness, className }))}
         ref={ref}
         {...props}
       />
-    )
-  }
-)
+    );
+  },
+);
 Button.displayName = "Button"
 
 export { Button, buttonVariants }

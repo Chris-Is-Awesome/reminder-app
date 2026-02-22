@@ -6,8 +6,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const isDev = process.env.NODE_ENV === 'development';
 
-function createWindow() {
-	const win = new BrowserWindow({
+function createWindows() {
+	const mainWin = new BrowserWindow({
 		width: 1200,
 		height: 800,
 		webPreferences: {
@@ -16,23 +16,36 @@ function createWindow() {
 			nodeIntegration: false,
 		},
 	})
+	// const notifWin = new BrowserWindow({
+	// 	width: 1200,
+	// 	height: 800,
+	// 	alwaysOnTop: true,
+	// 	frame: false,
+	// 	skipTaskbar: true,
+	// 	webPreferences: {
+	// 		preload: path.join(__dirname, 'preload.js'),
+	// 		contextIsolation: true,
+	// 		nodeIntegration: false,
+	// 	}
+	// });
+	// notifWin.setAlwaysOnTop(true, 'screen-saver');
 
 	if (isDev) {
 		// Load from Vite dev server
-		win.loadURL('http://localhost:5173');
-		win.webContents.openDevTools();
+		mainWin.loadURL('http://localhost:5173');
+		// win.webContents.openDevTools();
 	} else {
 		// Load built files
-		win.loadFile(path.join(__dirname, '../dist/index.html'));
+		mainWin.loadFile(path.join(__dirname, '../dist/index.html'));
 	}
 }
 
-app.whenReady().then(() => {
-	createWindow();
+app.whenReady().then(async () => {
+	createWindows();
 
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) {
-			createWindow();
+			createWindows();
 		}
 	})
 })
