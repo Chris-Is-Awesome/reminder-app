@@ -3,9 +3,12 @@ import { useItems } from "../hooks/useItems";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Field, FieldLabel, FieldGroup } from "./ui/field";
+import { Field, FieldLabel, FieldGroup, FieldSet } from "./ui/field";
 import type { Item } from "../types/Item";
 import DateTimePicker from "./reusable/DateTimePicker";
+import { NavBar } from "./reusable/NavBar";
+import { AlarmClockIcon, AlarmClockOffIcon } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ItemFormProps {
   item?: Item;
@@ -35,7 +38,7 @@ export function ItemForm({ item }: ItemFormProps) {
 
   const [title, setTitle] = useState(item?.title ?? "");
   const [body, setBody] = useState(item?.body ?? "");
-  const [remindAt, setRemindAt] = useState(item?.remindAt ?? null);
+  const [remindAt, setRemindAt] = useState(item?.remindAt ?? undefined);
   const [placeholder] = useState(
     () => bodyPlaceholders[Math.floor(Math.random() * bodyPlaceholders.length)],
   );
@@ -54,9 +57,13 @@ export function ItemForm({ item }: ItemFormProps) {
     });
   };
 
+  const handleRemoveReminderClick = () => {
+    setRemindAt(undefined);
+  };
+
   const submitBtnText = (): string => {
     if (remindAt) {
-      return "Remind me!";
+      return "Remind me";
     }
 
     if (item) {
@@ -75,35 +82,67 @@ export function ItemForm({ item }: ItemFormProps) {
   };
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      submitLabel={submitBtnText()}
-      formTitle={formTitle()}
-    >
-      <FieldGroup className="flex-col gap-1">
-        <Field>
-          <Input
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="border-2 border-secondary rounded-xl mt-2"
-          />
-        </Field>
-        <Field>
-          <Textarea
-            placeholder={placeholder}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            className="border-2 border-secondary rounded-xl mt-2 h-48 placeholder:text-muted-foreground"
-          />
-        </Field>
-        <FieldLabel htmlFor="remind-at" className="block w-full text-center">
-          Remind me
-        </FieldLabel>
-        <Field id="remind-at">
-          <DateTimePicker onChange={(date) => setRemindAt(date)} />
-        </Field>
-      </FieldGroup>
-    </Form>
+    <div className="min-h-screen flex flex-col">
+      <NavBar />
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-1/2">
+          <Form
+            onSubmit={handleSubmit}
+            submitLabel={submitBtnText()}
+            formTitle={formTitle()}
+          >
+            <FieldGroup className="flex-col gap-1 items-center">
+              <Field>
+                <FieldLabel htmlFor="title" className="sr-only">
+                  Note title
+                </FieldLabel>
+                <Input
+                  id="title"
+                  placeholder="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="border-2 border-secondary rounded-xl mt-2"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="note-body" className="sr-only">
+                  Note Contents
+                </FieldLabel>
+                <Textarea
+                  id="note-body"
+                  placeholder={placeholder}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  className="border-2 border-secondary rounded-xl mt-2 h-48 placeholder:text-muted-foreground"
+                />
+              </Field>
+              <FieldSet>
+                <legend className="block w-full text-center">
+                  <AlarmClockIcon
+                    className="inline mr-1 mb-1 size-5"
+                    aria-hidden="true"
+                  />
+                  Remind me
+                </legend>
+                <DateTimePicker
+                  date={remindAt}
+                  onChange={(date) => setRemindAt(date)}
+                >
+                  {remindAt && (
+                    <Button
+                      onClick={handleRemoveReminderClick}
+                      className="px-3"
+                      aria-label="Remove reminder"
+                    >
+                      <AlarmClockOffIcon />
+                    </Button>
+                  )}
+                </DateTimePicker>
+              </FieldSet>
+            </FieldGroup>
+          </Form>
+        </div>
+      </div>
+    </div>
   );
 }

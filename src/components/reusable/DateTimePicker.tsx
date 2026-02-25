@@ -4,17 +4,22 @@ import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Field, FieldLabel, FieldGroup } from "../ui/field";
 import { format, addYears, addHours, isToday } from "date-fns";
-import { ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, ChevronDownIcon, ClockIcon } from "lucide-react";
 import { Input } from "../ui/input";
 
 interface DateTimePickerProps {
+  date: Date | undefined;
+  children?: React.ReactNode;
   onChange?: (date: Date) => void;
 }
 
-export function DateTimePicker({ onChange }: DateTimePickerProps) {
+export function DateTimePicker({
+  date,
+  children,
+  onChange,
+}: DateTimePickerProps) {
   const now = new Date();
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date>();
   const [defaultTime, setDefaultTime] = useState<string>("");
 
   const combineDateTime = (date: Date, time: string): Date => {
@@ -29,7 +34,7 @@ export function DateTimePicker({ onChange }: DateTimePickerProps) {
       const time = isToday(selectedDate)
         ? format(addHours(new Date(), 1), "HH:mm")
         : "00:00";
-      setDate(selectedDate);
+      date = selectedDate;
       setDefaultTime(time);
       setOpen(false);
       onChange?.(combineDateTime(selectedDate, time));
@@ -45,46 +50,64 @@ export function DateTimePicker({ onChange }: DateTimePickerProps) {
   };
 
   return (
-    <>
-      <FieldGroup className="flex-row w-xs mt-2 items-center justify-center">
-        <Field className="flex flex-col gap-1 w-[250px]">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                data-empty={!date}
-                className="data-[empty=true]:text-muted-foreground bg-background w-[212px] justify-between text-left font-normal border-secondary"
-              >
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                <ChevronDownIcon />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 border-none" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                captionLayout="dropdown"
-                startMonth={now}
-                endMonth={addYears(now, 10)}
-                onSelect={handleDateSelect}
-                defaultMonth={date}
-                className="bg-background rounded-md border border-secondary relative overflow-hidden h-[330px]"
-              />
-            </PopoverContent>
-          </Popover>
-        </Field>
-        {date && (
-          <Field className="flex flex-col gap-1 w-[150px]">
+    <FieldGroup className="flex-row mt-2 items-center justify-center w-full flex">
+      <Field className="flex flex-col gap-1 w-[230px]">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              data-empty={!date}
+              className="data-[empty=true]:text-muted-foreground bg-background w-[212px] justify-between text-left font-normal border-secondary"
+            >
+              <div className="relative flex items-center justify-between w-full">
+                <CalendarIcon className="" aria-hidden="true" />
+                {date ? (
+                  format(date, "PPP")
+                ) : (
+                  <span className="">Pick a date</span>
+                )}
+                <ChevronDownIcon className="" aria-hidden="true" />
+              </div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 border-none" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              captionLayout="dropdown"
+              startMonth={now}
+              endMonth={addYears(now, 10)}
+              onSelect={handleDateSelect}
+              defaultMonth={date}
+              disabled={{ before: now }}
+              className="bg-background rounded-sm border border-secondary relative overflow-hidden text-foreground"
+            />
+          </PopoverContent>
+        </Popover>
+      </Field>
+      {date && (
+        <Field className="flex flex-col gap-1 w-[120px]">
+          <FieldLabel htmlFor="time-selection" className="sr-only">
+            Pick a time
+          </FieldLabel>
+          <div className="relative">
+            <ClockIcon
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-4"
+              aria-hidden="true"
+            />
             <Input
+              id="time-selection"
               type="time"
               step="60"
               value={defaultTime}
               onChange={handleTimeChange}
+              className="pl-9 rounded-md border-secondary [&::-webkit-calendar-picker-indicator]:hidden"
             />
-          </Field>
-        )}
-      </FieldGroup>
-    </>
+          </div>
+        </Field>
+      )}
+      {children}
+    </FieldGroup>
   );
 }
 

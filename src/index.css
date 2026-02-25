@@ -67,7 +67,8 @@
 	--muted-foreground: 0 0% 64%;
 	--primary: 220 96% 72%;
 	--secondary: 221 40% 22%;
-	--accent: 221 85% 59%;
+	--accent: 221 100% 73%;
+	--accent-foreground: 0 0% 6%;
 }
 
 body {
