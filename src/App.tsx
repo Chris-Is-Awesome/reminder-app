@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ItemForm } from "./components/ItemForm";
-import { NavButton } from "./components/reusable/NavButton";
+import { NavButton } from "./components/NavButton";
 import useSettingsStore, { applyTheme } from "./store/useSettingsStore";
 
 function App() {
