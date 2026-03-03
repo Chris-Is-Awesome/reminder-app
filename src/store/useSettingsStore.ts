@@ -31,15 +31,6 @@ export const applyTheme = (theme: Theme) => {
 	if (theme !== 'light') {
 		root.classList.add(`theme-${theme}`);
 	}
-
-	// if (theme === 'dark') {
-	// 	root.classList.add('dark');
-	// } else if (theme == 'light') {
-	// 	root.classList.remove('dark');
-	// } else {
-	// 	const isDark = window.matchMedia('(prefers-color-scheme: dark').matches;
-	// 	isDark ? root.classList.add('dark') : root.classList.remove('dark');
-	// }
 }
 
 const useSettingsStore = create<SettingsStore>()(
