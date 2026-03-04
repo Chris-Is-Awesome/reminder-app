@@ -74,62 +74,65 @@ export function ItemForm({ item }: ItemFormProps) {
   };
 
   return (
-    <Form
-      form={form}
-      onSubmit={onSubmit}
-      submitLabel={submitLabel}
-      submittingText={submittingText}
-      className="items-center justify-center min-h-screen"
-    >
-      <FormField
+    <div className="min-h-screen flex items-center justify-center">
+      <Form
         form={form}
-        name="title"
-        label="Title"
-        hideLabel
-        render={(field) => (
-          <Input
-            {...field}
-            placeholder="Title"
-            className="rounded-lg border-secondary h-14 text-2xl md:h-10 md:text-lg"
-          />
-        )}
-        className="w-5/6"
-      />
-      <FormField
-        form={form}
-        name="body"
-        label="Body"
-        hideLabel
-        render={(field) => (
-          <Textarea
-            {...field}
-            rows={4}
-            placeholder={bodyPlaceholder}
-            className="rounded-lg border-secondary"
-          />
-        )}
-        className="w-5/6"
-      />
-      <FieldSet>
-        <legend className="block w-full text-center">
-          <AlarmClockIcon
-            className="inline mr-1 mb-1 size-5"
-            aria-hidden="true"
-          />
-          Remind me
-        </legend>
-        <DateTimePicker date={remindAt} onChange={(date) => setRemindAt(date)}>
-          {remindAt && (
-            <Button
-              onClick={handleRemoveReminderClick}
-              className="px-3"
-              aria-label="Remove reminder"
-            >
-              <AlarmClockOffIcon />
-            </Button>
+        onSubmit={onSubmit}
+        submitLabel={submitLabel}
+        submittingText={submittingText}
+        className="items-center justify-center w-3/4"
+      >
+        <FormField
+          form={form}
+          name="title"
+          label="Title"
+          hideLabel
+          render={(field) => (
+            <Input
+              {...field}
+              placeholder="Title"
+              className="rounded-lg border-2 border-secondary text-xl md:h-10 md:text-lg focus-within:outline-none"
+            />
           )}
-        </DateTimePicker>
-      </FieldSet>
-    </Form>
+        />
+        <FormField
+          form={form}
+          name="body"
+          label="Body"
+          hideLabel
+          render={(field) => (
+            <Textarea
+              {...field}
+              rows={4}
+              placeholder={bodyPlaceholder}
+              className="rounded-lg border-2 border-secondary"
+            />
+          )}
+        />
+        <FieldSet>
+          <legend className="block text-center">
+            <AlarmClockIcon
+              className="inline mr-1 mb-1 size-5"
+              aria-hidden="true"
+            />
+            Remind me
+          </legend>
+          <DateTimePicker
+            date={remindAt}
+            onChange={(date) => setRemindAt(date)}
+          >
+            {remindAt && (
+              <Button
+                onClick={handleRemoveReminderClick}
+                className="px-3"
+                aria-label="Remove reminder"
+              >
+                <AlarmClockOffIcon />
+              </Button>
+            )}
+          </DateTimePicker>
+        </FieldSet>
+      </Form>
+    </div>
   );
 }

@@ -1,10 +1,10 @@
 import { addHours, addYears, format, isToday } from "date-fns";
-import { CalendarIcon, ChevronDownIcon, ClockIcon } from "lucide-react";
+import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
+import TimePicker from "./TimePicker";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
-import { Field, FieldGroup, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
+import { Field, FieldGroup } from "./ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface DateTimePickerProps {
@@ -20,7 +20,7 @@ export function DateTimePicker({
 }: DateTimePickerProps) {
   const now = new Date();
   const [open, setOpen] = useState(false);
-  const [defaultTime, setDefaultTime] = useState<string>("");
+  const [defaultTime, setDefaultTime] = useState<string>("00:00");
 
   const combineDateTime = (date: Date, time: string): Date => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -40,25 +40,25 @@ export function DateTimePicker({
     }
   };
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDefaultTime(e.target.value);
+  const handleTimeChange = (time: string) => {
+    setDefaultTime(time);
 
     if (date) {
-      onChange?.(combineDateTime(date, e.target.value));
+      onChange?.(combineDateTime(date, time));
     }
   };
 
   return (
-    <FieldGroup className="flex flex-col md:flex-row mt-2 items-center justify-center w-full">
-      <Field className="flex flex-col">
+    <FieldGroup className="flex md:flex-row mt-2 items-center justify-center">
+      <Field>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               data-empty={!date}
-              className="data-[empty=true]:text-muted-foreground bg-background w-[212px] md:w-full justify-between text-left font-normal border-secondary rounded-full md:rounded-lg"
+              className="data-[empty=true]:text-muted-foreground bg-background justify-between text-left font-normal border-secondary rounded-full md:rounded-lg border-2 p-0"
             >
-              <div className="relative flex items-center justify-between w-full gap-3">
+              <div className="flex gap-3 items-center p-4 md:p-3">
                 <CalendarIcon aria-hidden="true" />
                 {date ? format(date, "PPP") : <span>Pick a date</span>}
                 <ChevronDownIcon aria-hidden="true" />
@@ -80,7 +80,7 @@ export function DateTimePicker({
           </PopoverContent>
         </Popover>
       </Field>
-      {date && (
+      {/* {date && (
         <Field className="flex flex-col gap-1 w-[150px] md:w-full">
           <FieldLabel htmlFor="time-selection" className="sr-only">
             Pick a time
@@ -100,7 +100,20 @@ export function DateTimePicker({
             />
           </div>
         </Field>
+      )} */}
+      {date && (
+        <TimePicker defaultValue={defaultTime} onChange={handleTimeChange} />
       )}
+      {/* <Field>
+        <TimePicker
+          onChange={setTime}
+          value={time}
+          disableClock
+          clearIcon={null}
+          format="hh:mm a"
+          className="border-2 [&_input]:bg-transparent"
+        />
+      </Field> */}
       {children}
     </FieldGroup>
   );
